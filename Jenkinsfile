@@ -12,7 +12,7 @@ pipeline {
       agent {
         docker {
           image 'node:latest'
-          args '-v d:\\benben\\docker-data\\node_modules\\:$WORKSPACE/node_modules'
+          args '-v tutorial_jenkins_frontend_modules:$WORKSPACE/node_modules'
         }
       }
       steps {
