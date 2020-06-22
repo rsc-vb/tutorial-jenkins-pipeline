@@ -12,7 +12,7 @@ pipeline {
       agent {
         docker {
           image 'node:latest'
-          args '-v tutorial_jenkins_frontend_modules:$WORKSPACE/node_modules'
+          args '-v d:\benben\docker-data\node_modules\:$WORKSPACE/node_modules'
         }
       }
       steps {
@@ -22,37 +22,37 @@ pipeline {
         stash(name: 'frontend', includes: 'build/*/**')
       }
     }
-    stage('Build Image') {
-      steps {
-        unstash 'frontend'
-        script {
-          docker.withRegistry('', 'docker-hub') {
-            def image = docker.build(FRONTEND_IMAGE)
-            image.push(BUILD_ID)
-          }
-        }
-      }
-    }
-    stage('Deploy') {
-      steps {
-        script {
-          withCredentials([sshUserPrivateKey(
-            credentialsId: 'ssh',
-            keyFileVariable: 'identityFile',
-            passphraseVariable: '',
-            usernameVariable: 'user'
-          )]) {
-            def remote = [:]
-            remote.name = 'server'
-            remote.host = FRONTEND_SERVER
-            remote.user = user
-            remote.identityFile = identityFile
-            remote.allowAnyHosts = true
+    // stage('Build Image') {
+    //   steps {
+    //     unstash 'frontend'
+    //     script {
+    //       docker.withRegistry('', 'docker-hub') {
+    //         def image = docker.build(FRONTEND_IMAGE)
+    //         image.push(BUILD_ID)
+    //       }
+    //     }
+    //   }
+    // }
+    // stage('Deploy') {
+    //   steps {
+    //     script {
+    //       withCredentials([sshUserPrivateKey(
+    //         credentialsId: 'ssh',
+    //         keyFileVariable: 'identityFile',
+    //         passphraseVariable: '',
+    //         usernameVariable: 'user'
+    //       )]) {
+    //         def remote = [:]
+    //         remote.name = 'server'
+    //         remote.host = FRONTEND_SERVER
+    //         remote.user = user
+    //         remote.identityFile = identityFile
+    //         remote.allowAnyHosts = true
 
-            sshCommand remote: remote, command: "cd $FRONTEND_SERVER_DIR && export FRONTEND_IMAGE=$FRONTEND_IMAGE:$BUILD_ID && docker-compose up -d"
-          }
-        }
-      }
-    }
+    //         sshCommand remote: remote, command: "cd $FRONTEND_SERVER_DIR && export FRONTEND_IMAGE=$FRONTEND_IMAGE:$BUILD_ID && docker-compose up -d"
+    //       }
+    //     }
+    //   }
+    // }
   }
 }
