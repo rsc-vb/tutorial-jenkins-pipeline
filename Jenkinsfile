@@ -3,7 +3,7 @@ pipeline {
   environment {
     FRONTEND_GIT = 'https://github.com/rsc-vb/tutorial-jenkins-frontend.git'
     FRONTEND_BRANCH = 'master'
-    FRONTEND_IMAGE = 'rsc-vb/tutorial-jenkins-frontend'
+    FRONTEND_IMAGE = 'hoangvanthanhbinh/tutorial-jenkins-frontend'
     FRONTEND_SERVER = '1.2.3.4'
     FRONTEND_SERVER_DIR = './app'
   }
@@ -22,17 +22,17 @@ pipeline {
         stash(name: 'frontend', includes: 'build/*/**')
       }
     }
-    // stage('Build Image') {
-    //   steps {
-    //     unstash 'frontend'
-    //     script {
-    //       docker.withRegistry('', 'docker-hub') {
-    //         def image = docker.build(FRONTEND_IMAGE)
-    //         image.push(BUILD_ID)
-    //       }
-    //     }
-    //   }
-    // }
+    stage('Build Image') {
+      steps {
+        unstash 'frontend'
+        script {
+          docker.withRegistry('', 'docker-hub') {
+            def image = docker.build(FRONTEND_IMAGE)
+            image.push(BUILD_ID)
+          }
+        }
+      }
+    }
     // stage('Deploy') {
     //   steps {
     //     script {
